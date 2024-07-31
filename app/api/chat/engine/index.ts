@@ -1,24 +1,24 @@
-import { SimpleDocumentStore, VectorStoreIndex } from "llamaindex";
-import { storageContextFromDefaults } from "llamaindex/storage/StorageContext";
-import { STORAGE_CACHE_DIR } from "./shared";
+import { VectorStoreIndex } from "llamaindex";
+import { MilvusVectorStore } from "llamaindex/storage/vectorStore/MilvusVectorStore";
+import { checkRequiredEnvVars, getMilvusClient } from "./shared";
 
 export async function getDataSource(datasource: string) {
-  console.log(`Using datasource: ${datasource}`);
-  const storageContext = await storageContextFromDefaults({
-    persistDir: `${STORAGE_CACHE_DIR}/${datasource}`,
+  checkRequiredEnvVars();
+  const milvusClient = getMilvusClient();
+
+  const store = new MilvusVectorStore({
+    milvusClient,
+    collection: datasource,
   });
 
-  const numberOfDocs = Object.keys(
-    (storageContext.docStore as SimpleDocumentStore).toDict(),
-  ).length;
-  if (numberOfDocs === 0) {
-    // create a new index with empty nodes if no datasource found
-    return await VectorStoreIndex.init({
-      storageContext,
-      nodes: [],
-    });
-  }
-  return await VectorStoreIndex.init({
-    storageContext,
+  const isCollectionExist = await milvusClient.hasCollection({
+    collection_name: datasource,
   });
+  if (!isCollectionExist.value) {
+    throw new Error(
+      `Collection "${datasource}" does not exist! Run the generate script or mannually create the collection.`,
+    );
+  }
+
+  return await VectorStoreIndex.fromVectorStore(store);
 }
