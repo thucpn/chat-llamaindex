@@ -10,17 +10,7 @@ import { LlamaCloudIndex } from "llamaindex/cloud/LlamaCloudIndex";
 export async function runPipeline(
   currentIndex: VectorStoreIndex | LlamaCloudIndex,
   documents: Document[],
-  filename: string,
 ) {
-  // Update documents with metadata
-  for (const document of documents) {
-    document.metadata = {
-      ...document.metadata,
-      file_name: filename,
-      private: "true", // to separate from other public documents
-    };
-  }
-
   if (currentIndex instanceof LlamaCloudIndex) {
     // LlamaCloudIndex processes the documents automatically
     // so we don't need ingestion pipeline, just insert the documents directly

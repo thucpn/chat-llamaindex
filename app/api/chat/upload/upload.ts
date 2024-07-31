@@ -2,8 +2,8 @@ import {
   loadDocuments,
   saveDocument,
 } from "@/cl/app/api/chat/llamaindex/documents/helper";
-import { getDataSource } from "../engine";
 import { runPipeline } from "./pipeline";
+import { getIndex } from "../engine/shared";
 
 export async function uploadDocument(
   raw: string,
@@ -14,6 +14,16 @@ export async function uploadDocument(
   const fileBuffer = Buffer.from(content, "base64");
   const documents = await loadDocuments(fileBuffer, mimeType);
   const { filename } = await saveDocument(fileBuffer, mimeType);
-  const index = await getDataSource(datasource);
-  return await runPipeline(index, documents, filename);
+  const index = await getIndex(datasource);
+
+  // Update documents with metadata
+  for (const document of documents) {
+    document.metadata = {
+      ...document.metadata,
+      file_name: filename,
+      private: "true", // to separate from other public documents
+    };
+  }
+
+  return await runPipeline(index, documents);
 }

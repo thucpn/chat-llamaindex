@@ -1,4 +1,6 @@
 import { MilvusClient } from "@zilliz/milvus2-sdk-node";
+import { VectorStoreIndex } from "llamaindex";
+import { MilvusVectorStore } from "llamaindex/storage/vectorStore/MilvusVectorStore";
 
 const REQUIRED_ENV_VARS = [
   "MILVUS_ADDRESS",
@@ -29,4 +31,16 @@ export function checkRequiredEnvVars() {
       `Missing environment variables: ${missingEnvVars.join(", ")}`,
     );
   }
+}
+
+export async function getIndex(datasource: string) {
+  checkRequiredEnvVars();
+  const milvusClient = getMilvusClient();
+
+  const store = new MilvusVectorStore({
+    milvusClient,
+    collection: datasource,
+  });
+
+  return await VectorStoreIndex.fromVectorStore(store);
 }

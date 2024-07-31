@@ -4,7 +4,7 @@ import {
   MetadataFilters,
   Settings,
 } from "llamaindex";
-import { getDataSource } from "./index";
+import { getIndex, getMilvusClient } from "./shared";
 
 interface ChatEngineOptions {
   datasource?: string;
@@ -21,7 +21,16 @@ export async function createChatEngine({
     );
   }
 
-  const index = await getDataSource(datasource);
+  const isCollectionExist = await getMilvusClient().hasCollection({
+    collection_name: datasource,
+  });
+  if (!isCollectionExist.value) {
+    throw new Error(
+      `Collection "${datasource}" does not exist! Run the generate script or try uploading a file.`,
+    );
+  }
+
+  const index = await getIndex(datasource);
   const retriever = index.asRetriever({
     similarityTopK: process.env.TOP_K ? parseInt(process.env.TOP_K) : 3,
     filters: generateFilters(documentIds || []),
