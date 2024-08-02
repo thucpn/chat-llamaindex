@@ -77,6 +77,9 @@ importers:
       '@vercel/kv':
         specifier: ^0.2.4
         version: 0.2.4
+      '@zilliz/milvus2-sdk-node':
+        specifier: ^2.4.4
+        version: 2.4.4
       ai:
         specifier: ^3.0.21
         version: 3.1.35(openai@4.54.0(encoding@0.1.13))(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.27(typescript@5.1.6))(zod@3.23.8)
