@@ -3,12 +3,12 @@
 echo -e "\nAdding sources from create-llama..."
 
 # Remove current create-llama folder
-rm -rf app/api/chat/config
+rm -rf app/api/chat/config/
 rm -rf app/api/files
 rm -rf cl
 
 # Run the node command with specified options
-npx -y create-llama@0.1.27 \
+npx -y create-llama@0.1.39 \
     --framework nextjs \
     --template streaming \
     --engine context \
@@ -20,7 +20,7 @@ npx -y create-llama@0.1.27 \
     --post-install-action none \
     --no-llama-parse \
     --example-file \
-    --vector-db none \
+    --vector-db llamacloud \
     --use-pnpm \
     -- cl >/dev/null
 
@@ -31,3 +31,6 @@ cp -r cl/app/api/chat/config app/api/chat/config
 
 # copy example .env file
 cp cl/.env .env.development.local
+
+# copy output folder
+cp -r cl/output output

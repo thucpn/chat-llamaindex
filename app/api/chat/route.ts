@@ -17,7 +17,7 @@ import {
 import {
   createCallbackManager,
   createStreamTimeout,
-} from "@/cl/app/api/chat/llamaindex/streaming/events";
+} from "./llamaindex/streaming/events";
 import { LLMConfig } from "@/app/store/bot";
 
 initSettings();
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         {
-          error:
+          detail:
             "datasource and messages are required in the request body and the last message must be from the user",
         },
         { status: 400 },
